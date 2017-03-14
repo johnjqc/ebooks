@@ -14,11 +14,41 @@ import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity {
 
+    TextView mConditionTextView;
+    Button mButton1;
+    Button mButton2;
+
+    DatabaseReference mRootRef = FirebaseDatabase.getInstance().getReference();
+    DatabaseReference conditionRef = mRootRef.child("condition");
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mConditionTextView = (TextView)findViewById(R.id.textViewCondition);
+        mButton1 = (Button)findViewById(R.id.button2);
+        mButton2 = (Button)findViewById(R.id.button3);
+
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        conditionRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String text = dataSnapshot.getValue(String.class);
+                mConditionTextView.setText(text);
+                Log.d("firebase-db", "Value is: " + text);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
 }
