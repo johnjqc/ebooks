@@ -79,8 +79,8 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Book> getDataSet() {
         ArrayList results = new ArrayList<>();
         for (int index = 0; index < 20; index++) {
-            Book obj = new Book("Some Primary Text " + index,
-                    "Year " + index);
+            Book obj = new Book("Mile " + index,
+                    "Publish year " + index);
             results.add(index, obj);
         }
         return results;
