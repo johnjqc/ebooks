@@ -2,6 +2,7 @@ package com.jsoft.ebooksdirectory;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
@@ -16,12 +17,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
 
-    TextView mConditionTextView;
-    Button mButton1;
-    Button mButton2;
-	
 	private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -34,10 +33,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        mConditionTextView = (TextView)findViewById(R.id.textViewCondition);
-        mButton1 = (Button)findViewById(R.id.button2);
-        mButton2 = (Button)findViewById(R.id.button3);
+        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
 
 		mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
         mRecyclerView.setHasFixedSize(true);
@@ -55,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String text = dataSnapshot.getValue(String.class);
-                mConditionTextView.setText(text);
+                //mConditionTextView.setText(text);
                 Log.d("firebase-db", "Value is: " + text);
 
             }
@@ -80,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
     }
  
     private ArrayList<Book> getDataSet() {
-        ArrayList results = new ArrayList<Book>();
+        ArrayList results = new ArrayList<>();
         for (int index = 0; index < 20; index++) {
             Book obj = new Book("Some Primary Text " + index,
                     "Year " + index);

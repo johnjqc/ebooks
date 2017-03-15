@@ -1,4 +1,4 @@
-package com.jsoft.ebooksdirectory.model;
+package com.jsoft.ebooksdirectory;
 
 /**
 *	Book model
@@ -7,10 +7,10 @@ package com.jsoft.ebooksdirectory.model;
 class Book {
     String name;
     String year;
- 
-    Person(String name, String age) {
+
+	Book(String name, String year) {
         this.name = name;
-        this.age = age;
+        this.year = year;
     }
 	
 	public String getName() {
