@@ -1,4 +1,4 @@
-package com.jsoft.ebooksdirectory;
+package com.jsoft.ebooksdirectory.service;
 
 
 import android.app.NotificationManager;
@@ -12,6 +12,8 @@ import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.jsoft.ebooksdirectory.MainActivity;
+import com.jsoft.ebooksdirectory.R;
 
 /**
  * Created by john on 15/03/17.

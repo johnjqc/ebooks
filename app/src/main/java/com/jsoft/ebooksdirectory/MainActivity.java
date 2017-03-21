@@ -1,34 +1,36 @@
 package com.jsoft.ebooksdirectory;
 
-import android.support.v7.app.AppCompatActivity;
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.widget.Button;
-import android.widget.TextView;
+import android.view.View;
 
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.messaging.FirebaseMessaging;
+import com.jsoft.ebooksdirectory.holder.BookHolder;
+import com.jsoft.ebooksdirectory.model.Book;
 
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
+import java.net.URL;
 
-import java.util.ArrayList;
-
-public class MainActivity extends AppCompatActivity {
+/**
+ *  @author JohnJQC
+ */
+public class MainActivity extends BaseActivity {
 
 	private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
+    private LinearLayoutManager mLayoutManager;
     private static String LOG_TAG = "eBooks-MainActivity";
 
-    DatabaseReference mRootRef = FirebaseDatabase.getInstance().getReference();
-    DatabaseReference conditionRef = mRootRef.child("condition");
+    DatabaseReference conditionRef = null;
+    private FirebaseRecyclerAdapter<Book, BookHolder> mAdapterFb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,50 +41,109 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mAdapter = new MyRecyclerViewAdapter(getDataSet());
-        mRecyclerView.setAdapter(mAdapter);
 
+        DatabaseReference mRootRef = FirebaseDatabase.getInstance().getReference();
+        conditionRef = mRootRef.child("books");
+
+        new LoadFirebaseData().execute();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+//        Query postsQuery = conditionRef;
+//        mAdapterFb = new FirebaseRecyclerAdapter<Book, BookHolder>(Book.class, R.layout.bookcard_view, BookHolder.class, postsQuery) {
+//            @Override
+//            protected void populateViewHolder(BookHolder viewHolder, Book model, int position) {
+//                asyncTaskWrapper(viewHolder, model, position).execute();
 
-        conditionRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String text = dataSnapshot.getValue(String.class);
-                //mConditionTextView.setText(text);
-                Log.d("firebase-db", "Value is: " + text);
+//                viewHolder.name.setText(model.getName());
+//                viewHolder.year.setText(String.valueOf(model.getYear()));
+//
+//                final DatabaseReference postRef = getRef(position);
+//                final String postKey = postRef.getKey();
+//                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        // Launch PostDetailActivity
+//
+//                    }
+//                });
+//            }
+//        };
 
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
     }
-	
-	@Override
-    protected void onResume() {
-        super.onResume();
-        ((MyRecyclerViewAdapter) mAdapter).setOnItemClickListener(new MyRecyclerViewAdapter
-                .MyClickListener() {
+
+
+    public AsyncTask asyncTaskWrapper(final BookHolder viewHolder, final Book model, final int position) {
+        AsyncTask task = new AsyncTask<URL, Integer, Long>() {
             @Override
-            public void onItemClick(int position, View v) {
-                Log.i(LOG_TAG, " Clicked on Item " + position);
+            protected Long doInBackground(URL... params) {
+                return null;
             }
-        });
+            @Override
+            protected void onProgressUpdate(Integer... progress) {
+            }
+
+            @Override
+            protected void onPostExecute(Long result) {
+                System.out.println("Finished executing public");
+                viewHolder.name.setText(model.getName());
+                viewHolder.year.setText(String.valueOf(model.getYear()));
+            }
+        };
+        return task;
     }
- 
-    private ArrayList<Book> getDataSet() {
-        ArrayList results = new ArrayList<>();
-        for (int index = 0; index < 20; index++) {
-            Book obj = new Book("Mile " + index,
-                    "Publish year " + index);
-            results.add(index, obj);
+
+    public class LoadFirebaseData extends AsyncTask<Void, Void, Integer> {
+        private ProgressDialog Dialog = new ProgressDialog(MainActivity.this);
+
+        @Override
+        protected void onPreExecute() {
+            try {
+                Dialog.setMessage("Doing something...");
+                Dialog.show();
+                Log.d("task...", "mensaje show");
+            }catch (Exception e) {
+                Log.d("task...", "mensaje error.....");
+                e.printStackTrace();
+            }
         }
-        return results;
+
+        @Override
+        protected void onPostExecute(Integer result) {
+            if(result==0) {
+                mRecyclerView.setAdapter(mAdapterFb);
+            }
+            Dialog.dismiss();
+        }
+
+        @Override
+        protected Integer doInBackground(Void... params) {
+            Query postsQuery = conditionRef;
+            mAdapterFb = new FirebaseRecyclerAdapter<Book, BookHolder>(Book.class, R.layout.bookcard_view, BookHolder.class, postsQuery) {
+                @Override
+                protected void populateViewHolder(BookHolder viewHolder, Book model, int position) {
+
+                viewHolder.name.setText(model.getName());
+                viewHolder.year.setText(String.valueOf(model.getYear()));
+
+//                final DatabaseReference postRef = getRef(position);
+//                final String postKey = postRef.getKey();
+//                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        // Launch PostDetailActivity
+//
+//                    }
+//                });
+                }
+            };
+
+            return 0;
+        }
+
+
     }
+
 }
